@@ -10,7 +10,7 @@ echo -e "${GREEN}Updating user environment...${NC}"
 git pull
 
 # Run the update playbook
-ansible-playbook -i ../ansible/inventory.yml ../ansible/playbooks/user_env_update.yml
+ansible-playbook -i ../ansible/inventory.yml ../ansible/playbooks/main_update.yml
 
 echo -e "${GREEN}Update complete!${NC}"
 
