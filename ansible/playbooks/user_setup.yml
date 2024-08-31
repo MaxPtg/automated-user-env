@@ -1,0 +1,39 @@
+---
+- name: Configure user environment
+  hosts: all
+  become: yes
+  vars:
+    target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
+
+  tasks:
+    - name: Copy custom dotfiles
+      copy:
+        src: "../../configs/{{ item }}"
+        dest: "/home/{{ target_user }}/{{ item }}"
+        owner: "{{ target_user }}"
+        group: "{{ target_user }}"
+        mode: '0644'
+      loop:
+        - .custom.bashrc
+        - .custom.bash_profile
+        - .custom.vimrc
+
+    - name: Ensure custom bashrc is sourced in .bashrc
+      lineinfile:
+        path: "/home/{{ target_user }}/.bashrc"
+        line: "[ -f ~/.custom.bashrc ] && source ~/.custom.bashrc"
+        create: yes
+
+    - name: Ensure custom bash_profile is sourced in .bash_profile
+      lineinfile:
+        path: "/home/{{ target_user }}/.bash_profile"
+        line: "[ -f ~/.custom.bash_profile ] && source ~/.custom.bash_profile"
+        create: yes
+
+    - name: Ensure custom vimrc is sourced in .vimrc
+      lineinfile:
+        path: "/home/{{ target_user }}/.vimrc"
+        line: "source ~/.custom.vimrc"
+        create: yes
+
+    # Add more tasks for other configuration files as needed

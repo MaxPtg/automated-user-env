@@ -1,0 +1,78 @@
+---
+- name: Uninstall Oh-My-Bash and remove configurations
+  hosts: all
+  become: yes
+  vars:
+    osh_install_dir: /usr/local/share/oh-my-bash
+    osh_custom_dir: /usr/local/share/oh-my-bash/custom
+    target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
+
+  tasks:
+    - name: Remove Oh-My-Bash installation directory
+      file:
+        path: "{{ osh_install_dir }}"
+        state: absent
+
+    - name: Remove Oh-My-Bash custom directory
+      file:
+        path: "{{ osh_custom_dir }}"
+        state: absent
+
+    - name: Remove global variables from /etc/environment
+      lineinfile:
+        path: /etc/environment
+        regexp: "^OSH=|^OSH_CUSTOM="
+        state: absent
+
+    - name: Remove .custom.bashrc from user's home directory
+      file:
+        path: "/home/{{ target_user }}/.custom.bashrc"
+        state: absent
+
+    - name: Remove .custom.bash_profile from user's home directory
+      file:
+        path: "/home/{{ target_user }}/.custom.bash_profile"
+        state: absent
+
+    - name: Remove Oh-My-Bash configurations from user's .bashrc
+      blockinfile:
+        path: "/home/{{ target_user }}/.bashrc"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - OH-MY-BASH"
+        state: absent
+
+    - name: Remove Oh-My-Bash configurations from user's .bash_profile
+      blockinfile:
+        path: "/home/{{ target_user }}/.bash_profile"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - OH-MY-BASH"
+        state: absent
+
+    - name: Remove custom theme file
+      file:
+        path: "{{ osh_custom_dir }}/themes/luan/luan.theme.sh"
+        state: absent
+
+    - name: Remove any remaining Oh-My-Bash related lines from .bashrc
+      lineinfile:
+        path: "/home/{{ target_user }}/.bashrc"
+        regexp: "{{ item }}"
+        state: absent
+      loop:
+        - "^source.*oh-my-bash.sh"
+        - "^OSH=.*"
+        - "^OSH_THEME=.*"
+        - "^OSH_CUSTOM=.*"
+
+    - name: Remove any remaining Oh-My-Bash related lines from .bash_profile
+      lineinfile:
+        path: "/home/{{ target_user }}/.bash_profile"
+        regexp: "{{ item }}"
+        state: absent
+      loop:
+        - "^source.*oh-my-bash.sh"
+        - "^OSH=.*"
+        - "^OSH_THEME=.*"
+        - "^OSH_CUSTOM=.*"
+
+    - name: Notify user to restart their shell session
+      debug:
+        msg: "Oh-My-Bash has been uninstalled. Please restart your shell session or run 'source ~/.bashrc' to apply the changes."
