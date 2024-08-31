@@ -66,5 +66,5 @@
         mode: '0644'
 
     - name: Reload bash configuration
-      shell: source {{ target_user_home_dir }}/.bashrc
+      shell: bash -c 'source {{ target_user_home_dir }}/.bashrc'
       become_user: "{{ target_user }}"
