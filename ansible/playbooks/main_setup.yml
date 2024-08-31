@@ -2,6 +2,7 @@
 - name: Set up user environment
   hosts: all
   become: yes
+
   vars_prompt:
     - name: target_user
       prompt: Enter the target username
@@ -15,6 +16,7 @@
       prompt: The installation directory for oh-my-bash
       private: no
       default: /usr/local/share/oh-my-bash
+      
   tasks:
     - name: Ensure target user exists
       user:

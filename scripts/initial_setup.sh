@@ -26,7 +26,7 @@ install_ansible() {
 echo -e "${GREEN}Starting initial setup...${NC}"
 
 if ! command_exists ansible; then
-  echo "Ansible not found. Installing..."
+  echo "Ansible not found. Installing..."rc 
   install_ansible
 else
   echo "Ansible is already installed."

@@ -15,14 +15,45 @@
         - .custom.bashrc
         - .custom.bash_profile
 
-    - name: Ensure custom bashrc is sourced in .bashrc
-      lineinfile:
+    - name: Ensure oh-my-bash is sourced in .bashrc
+      blockinfile:
         path: "{{ target_user_home_dir }}/.bashrc"
-        line: "[ -f ~/.custom.bashrc ] && source ~/.custom.bashrc"
-        create: yes
+        block: |
 
-    - name: Ensure custom bash_profile is sourced in .bash_profile
-      lineinfile:
-        path: "{{ target_user_home_dir }}/.bash_profile"
-        line: "[ -f ~/.custom.bash_profile ] && source ~/.custom.bash_profile"
+          # Oh-My-Bash configuration
+          export OSH='{{ osh_install_dir }}'
+
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - OH-MY-BASH"
         create: yes
+        owner: "{{ target_user }}"
+        group: "{{ target_user }}"
+        mode: '0644'
+
+    - name: Ensure .custom.bashrc is sourced in user's .bashrc
+      blockinfile:
+        path: "{{ target_user_home_dir }}/.bashrc"
+        block: |
+          # Source custom bashrc if it exists
+          if [ -f ~/.custom.bashrc ]; then
+              source ~/.custom.bashrc
+          fi
+
+        create: yes
+        owner: "{{ target_user }}"
+        group: "{{ target_user }}"
+        mode: '0644'
+
+    - name: Ensure .custom.bash_profile is sourced in user's .bash_profile
+      blockinfile:
+        path: "{{ target_user_home_dir }}/.bash_profile"
+        block: |
+          # Source custom bash_profile if it exists
+          if [ -f ~/.custom.bash_profile ]; then
+              source ~/.custom.bash_profile
+          fi
+
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - OH-MY-BASH"
+        create: yes
+        owner: "{{ target_user }}"
+        group: "{{ target_user }}"
+        mode: '0644'
