@@ -2,7 +2,7 @@
 - name: Set up user environment
   hosts: all
   become: yes
-
+  
   vars_prompt:
     - name: target_user
       prompt: Enter the target username
@@ -18,6 +18,17 @@
       default: /usr/local/share/oh-my-bash
 
   tasks:
+    - name: Check if user has sudo permissions or is root
+      command: sudo -n true
+      register: sudo_result
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Abort if user doesn't have sudo permissions and is not root
+      fail:
+        msg: "This playbook requires sudo permissions or root access. Please run with sudo or as root."
+      when: sudo_result.rc != 0 and ansible_user_id != 'root'
+
     - name: Ensure target user exists
       user:
         name: "{{ target_user }}"
@@ -42,7 +53,7 @@
 
     - name: Display user information
       debug:
-        msg: 
+        msg:
           - "Target User: {{ target_user }}"
           - "Home Directory: {{ target_user_home_dir }}"
           - "Oh-My-Bash Install Directory: {{ osh_install_dir }}"

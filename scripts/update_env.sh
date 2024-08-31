@@ -6,9 +6,6 @@ NC='\033[0m' # No Color
 
 echo -e "${GREEN}Updating user environment...${NC}"
 
-# Navigate to the repository directory
-cd /path/to/user-env-setup
-
 # Pull latest changes
 git pull
 
