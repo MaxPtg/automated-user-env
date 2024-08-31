@@ -13,3 +13,5 @@ git pull
 ansible-playbook -i ../ansible/inventory.yml ../ansible/playbooks/main_update.yml
 
 echo -e "${GREEN}Update complete!${NC}"
+echo -e "${GREEN}Source your users .bashrc file in order for the changes to take effect.${NC}"
+echo -e "${GREEN}> source ~/.bashrc${NC}"

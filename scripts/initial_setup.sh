@@ -36,3 +36,5 @@ echo -e "${GREEN}Running Ansible playbook...${NC}"
 ansible-playbook -i ../ansible/inventory.yml ../ansible/playbooks/main_setup.yml
 
 echo -e "${GREEN}Setup complete!${NC}"
+echo -e "${GREEN}Source your users .bashrc file in order for the changes to take effect.${NC}"
+echo -e "${GREEN}> source ~/.bashrc${NC}"
