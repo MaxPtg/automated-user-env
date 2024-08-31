@@ -15,6 +15,13 @@
         - .custom.bashrc
         - .custom.bash_profile
 
+    - name: Set global variables
+      lineinfile:
+        path: /etc/environment
+        line: "{{ item }}"
+      loop:
+        - "OSH={{ osh_install_dir }}"
+
     - name: Ensure oh-my-bash is sourced in .bashrc
       blockinfile:
         path: "{{ target_user_home_dir }}/.bashrc"

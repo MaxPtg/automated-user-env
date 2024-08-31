@@ -16,7 +16,7 @@
       prompt: The installation directory for oh-my-bash
       private: no
       default: /usr/local/share/oh-my-bash
-      
+
   tasks:
     - name: Ensure target user exists
       user:
@@ -48,17 +48,11 @@
           - "Oh-My-Bash Install Directory: {{ osh_install_dir }}"
 
 - import_playbook: packages_install.yml
-  vars:
-    target_user: "{{ hostvars['localhost']['shared_vars']['target_user'] }}"
-    target_user_home_dir: "{{ hostvars['localhost']['shared_vars']['target_user_home_dir'] }}"
 
 - import_playbook: oh-my-bash_setup.yml
+
+- import_playbook: user_env_setup.yml
   vars:
     osh_install_dir: "{{ hostvars['localhost']['shared_vars']['osh_install_dir'] }}"
-    target_user: "{{ hostvars['localhost']['shared_vars']['target_user'] }}"
-    target_user_home_dir: "{{ hostvars['localhost']['shared_vars']['target_user_home_dir'] }}"
-
-- import_playbook: user_setup.yml
-  vars:
     target_user: "{{ hostvars['localhost']['shared_vars']['target_user'] }}"
     target_user_home_dir: "{{ hostvars['localhost']['shared_vars']['target_user_home_dir'] }}"
