@@ -25,11 +25,26 @@ install_ansible() {
 # Main script
 echo -e "${GREEN}Starting initial setup...${NC}"
 
+# Check if Ansible is installed
 if ! command_exists ansible; then
   echo "Ansible not found. Installing..."rc 
   install_ansible
 else
   echo "Ansible is already installed."
+fi
+
+# Check if curl is installed
+if ! command_exists curl; then
+  echo "curl not found. Installing..."
+  if command_exists apt-get; then
+    sudo apt-get update
+    sudo apt-get install -y curl
+  else
+    echo "Unsupported package manager. Please install curl manually."
+    exit 1
+  fi
+else
+  echo "curl is already installed."
 fi
 
 echo -e "${GREEN}Running Ansible playbook...${NC}"
