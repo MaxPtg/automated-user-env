@@ -12,19 +12,16 @@
     - name: Install required packages (Debian/Ubuntu)
       apt:
         name:
-          - git
-          - vim
           - tmux
-          # Add other packages you need
+          - zip
+          - unzip
+          - btop
+          - htop
+          - wget
+          - curl
+          - ncdu
+          - bat
+          - ncdu
+          - fzf
         state: present
       when: ansible_os_family == "Debian"
-
-    - name: Install required packages (RedHat/CentOS)
-      yum:
-        name:
-          - git
-          - vim
-          - tmux
-          # Add other packages you need
-        state: present
-      when: ansible_os_family == "RedHat"

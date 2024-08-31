@@ -33,6 +33,6 @@ else
 fi
 
 echo -e "${GREEN}Running Ansible playbook...${NC}"
-ansible-playbook -i ../ansible/inventory.yml ../ansible/playbooks/main_setup.yml
+ansible-playbook -i ../ansible/inventory.yml ../ansible/playbooks/main_setup.yml -v
 
 echo -e "${GREEN}Setup complete!${NC}"
