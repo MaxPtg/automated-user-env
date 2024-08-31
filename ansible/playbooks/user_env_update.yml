@@ -6,25 +6,17 @@
     target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
 
   tasks:
-    - name: Update Oh-My-Bash
-      git:
-        repo: https://github.com/ohmybash/oh-my-bash.git
-        dest: "/home/{{ target_user }}/.oh-my-bash"
-        update: yes
-      become_user: "{{ target_user }}"
-
     - name: Update custom theme
       copy:
-        src: ../../themes/custom_oh_my_bash_theme.sh
-        dest: "/home/{{ target_user }}/.oh-my-bash/custom/themes/custom_theme.sh"
-        owner: "{{ target_user }}"
-        group: "{{ target_user }}"
+        src: ../../themes/oh-my-bash/luan-custom.theme.sh
+        dest: "{{ osh_install_dir }}/themes/luan/luan.theme.sh"
         mode: '0644'
+        force: yes
 
     - name: Update custom dotfiles
       copy:
         src: "../../configs/{{ item }}"
-        dest: "/home/{{ target_user }}/{{ item }}"
+        dest: "{{ target_user_home_dir }}/{{ item }}"
         owner: "{{ target_user }}"
         group: "{{ target_user }}"
         mode: '0644'
@@ -35,5 +27,5 @@
     # Add more tasks to update other custom configurations as needed
 
     - name: Reload bash configuration
-      shell: source /home/{{ target_user }}/.bashrc
+      shell: source {{ target_user_home_dir }}/.bashrc
       become_user: "{{ target_user }}"

@@ -58,11 +58,15 @@ plugins=(
 
 # env variables
 export EDITOR='nano'
+force_color_prompt=yes
+color_prompt=yes
 
 # aliases
 alias update='sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean'
 alias rcedit='nano ~/.bashrc && source ~/.bashrc'
 alias rc="source ~/.bashrc"
+alias ls='ls --color=always'
+alias test='echo "Test successful! yay!"'
 
 # functions
 function mkcd() {

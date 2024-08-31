@@ -64,3 +64,7 @@
         owner: "{{ target_user }}"
         group: "{{ target_user }}"
         mode: '0644'
+
+    - name: Reload bash configuration
+      shell: source {{ target_user_home_dir }}/.bashrc
+      become_user: "{{ target_user }}"

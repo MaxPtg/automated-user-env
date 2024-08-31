@@ -24,11 +24,6 @@
       ignore_errors: yes
       changed_when: false
 
-    - name: Abort if user doesn't have sudo permissions and is not root
-      fail:
-        msg: "This playbook requires sudo permissions or root access. Please run with sudo or as root."
-      when: sudo_result.rc != 0 and ansible_user_id != 'root'
-
     - name: Ensure target user exists
       user:
         name: "{{ target_user }}"
@@ -58,13 +53,7 @@
           - "Home Directory: {{ target_user_home_dir }}"
           - "Oh-My-Bash Install Directory: {{ osh_install_dir }}"
 
-- import_playbook: packages_install.yml
-
-- import_playbook: oh-my-bash_setup.yml
-  vars:
-    osh_install_dir: "{{ hostvars['localhost']['shared_vars']['osh_install_dir'] }}"
-
-- import_playbook: user_env_setup.yml
+- import_playbook: user_env_update.yml
   vars:
     osh_install_dir: "{{ hostvars['localhost']['shared_vars']['osh_install_dir'] }}"
     target_user: "{{ hostvars['localhost']['shared_vars']['target_user'] }}"
