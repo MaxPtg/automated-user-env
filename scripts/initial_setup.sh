@@ -15,7 +15,7 @@ install_ansible() {
     sudo apt-get update
     sudo apt-get install -y software-properties-common
     sudo apt-add-repository --yes --update ppa:ansible/ansible
-    sudo apt-get install -y ansible
+    sudo apt-get install -y ansible curl
   else
     echo "Unsupported package manager. Please install Ansible manually."
     exit 1
@@ -36,5 +36,3 @@ echo -e "${GREEN}Running Ansible playbook...${NC}"
 ansible-playbook -i ../ansible/inventory.yml ../ansible/playbooks/main_setup.yml
 
 echo -e "${GREEN}Setup complete!${NC}"
-
-source ~/.bashrc

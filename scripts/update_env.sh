@@ -13,5 +13,3 @@ git pull
 ansible-playbook -i ../ansible/inventory.yml ../ansible/playbooks/main_update.yml
 
 echo -e "${GREEN}Update complete!${NC}"
-
-source ~/.bashrc
