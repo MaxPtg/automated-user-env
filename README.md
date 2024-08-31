@@ -57,4 +57,5 @@ This script uses `DOCKER_BUILDKIT=1` to build the container, which allows for ca
 
 ## Known Bugs/ToDo
 
-- None
+- [ ] Add support to change the `oh-my-bash` installation directory
+    - If **not** left on default, manual changes to the `.custom.bash*` files are needed
