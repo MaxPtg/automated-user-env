@@ -66,7 +66,6 @@ alias update='sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y &
 alias rcedit='nano ~/.bashrc && source ~/.bashrc'
 alias rc="source ~/.bashrc"
 alias ls='ls --color=always'
-alias test1='echo "Test 1 successful! yay!"'
 
 # functions
 function mkcd() {
