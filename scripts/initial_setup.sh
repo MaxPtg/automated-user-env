@@ -32,10 +32,6 @@ else
   echo "Ansible is already installed."
 fi
 
-echo -e "${GREEN}Cloning repository...${NC}"
-git clone https://github.com/MaxPtg/automated-user-env.git
-cd automated-user-env
-
 echo -e "${GREEN}Running Ansible playbook...${NC}"
 ansible-playbook -i ../ansible/inventory.yml ../ansible/playbooks/main_setup.yml
 

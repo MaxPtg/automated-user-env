@@ -4,7 +4,6 @@
   become: yes
   vars:
     osh_install_dir: /usr/local/share/oh-my-bash
-    osh_custom_dir: /usr/local/share/oh-my-bash/custom
     target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
 
   tasks:
@@ -20,24 +19,17 @@
         line: "{{ item }}"
       loop:
         - "OSH={{ osh_install_dir }}"
-        - "OSH_CUSTOM={{ osh_custom_dir }}"
 
-    - name: Create custom theme directory
+    - name: Create theme directory
       file:
-        path: "{{ osh_custom_dir }}/themes"
+        path: "{{ osh_install_dir }}/themes"
         state: directory
         mode: '0755'
 
-    - name: Copy luan theme to custom themes
-      copy:
-        src: "{{ osh_install_dir }}/themes/luan"
-        dest: "{{ osh_custom_dir }}/themes/"
-        remote_src: yes
-
-    - name: Configure custom theme
+    - name: Copy custom luan theme to themes
       copy:
         src: ../../themes/oh-my-bash/luan-custom.theme.sh
-        dest: "{{ osh_custom_dir }}/themes/luan/luan.theme.sh"
+        dest: "{{ osh_install_dir }}/themes/luan/luan.theme.sh"
         mode: '0644'
         force: yes
 
@@ -63,7 +55,6 @@
         block: |
           # Oh-My-Bash configuration
           export OSH='{{ osh_install_dir }}'
-          export OSH_CUSTOM='{{ osh_custom_dir }}'
           
           # Source custom bashrc if it exists
           if [ -f ~/.custom.bashrc ]; then
