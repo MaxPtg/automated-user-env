@@ -51,24 +51,24 @@
       - name: Check if /usr/local/share/oh-my-bash exists
         stat:
           path: /usr/local/share/oh-my-bash
-        register: osh_install_dir
+        register: osh_dir
 
       - name: Set fact for Oh My Bash path from $OSH
         set_fact:
-          osh_path: "{{ osh_var.stdout }}"
+          osh_install_dir: "{{ osh_var.stdout }}"
         when: osh_var.stdout != ""
 
       - name: Set fact for Oh My Bash path from directory
         set_fact:
-          osh_path: "/usr/local/share/oh-my-bash"
-        when: osh_install_dir.stat.exists and osh_var.stdout == ""
+          osh_install_dir: "/usr/local/share/oh-my-bash"
+        when: osh_dir.stat.exists and osh_var.stdout == ""
 
       - name: Abort if Oh My Bash is not installed
         fail:
           msg: "Oh My Bash is not installed. Please install it before running this playbook."
         when: 
           - osh_var.stdout == ""
-          - not osh_install_dir.stat.exists
+          - not osh_dir.stat.exists
 
     - name: Set fact for variables to be used in imported playbooks
       set_fact:
