@@ -6,6 +6,7 @@
     - name: target_user
       prompt: Enter the target username
       private: no
+      default: "{{ lookup('env', 'USER') }}"
 
   tasks:
     - name: Ensure target user exists
@@ -13,7 +14,6 @@
         name: "{{ target_user }}"
         state: present
         create_home: yes
-      when: target_user != "root"
 
 - import_playbook: packages_install.yml
 - import_playbook: oh-my-bash_setup.yml

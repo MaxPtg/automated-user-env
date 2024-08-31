@@ -5,7 +5,7 @@
 #=== oh-my-bash ==============================================
 
 # Set Oh-My-Bash theme
-OSH_THEME="custom_theme"
+OSH_THEME="luan"
 
 # Enable command auto-correction
 ENABLE_CORRECTION="true"
@@ -56,8 +56,10 @@ plugins=(
 
 #=== CUSTOM CONFIGURATIONS ===================================
 
-# aliases
+# env variables
 export EDITOR='nano'
+
+# aliases
 alias update='sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean'
 alias rcedit='nano ~/.bashrc && source ~/.bashrc'
 alias rc="source ~/.bashrc"

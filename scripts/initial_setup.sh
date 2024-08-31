@@ -33,10 +33,10 @@ else
 fi
 
 echo -e "${GREEN}Cloning repository...${NC}"
-git clone https://github.com/yourusername/user-env-setup.git
-cd user-env-setup
+git clone https://github.com/MaxPtg/automated-user-env.git
+cd automated-user-env
 
 echo -e "${GREEN}Running Ansible playbook...${NC}"
-ansible-playbook -i ansible/inventory.yml ansible/playbooks/main.yml
+ansible-playbook -i ../ansible/inventory.yml ../ansible/playbooks/main_setup.yml
 
 echo -e "${GREEN}Setup complete!${NC}"
