@@ -6,7 +6,7 @@
     - name: target_user
       prompt: Enter the target username
       private: no
-      default: "{{ lookup('env', 'USER') }}"
+      default: "{{ lookup('pipe', 'whoami') }}"
     - name: target_user_home_dir
       prompt: Enter the target user's home directory
       private: no
