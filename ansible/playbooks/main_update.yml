@@ -24,6 +24,11 @@
       ignore_errors: yes
       changed_when: false
 
+    - name: Abort if user doesn't have sudo permissions and is not root
+      fail:
+        msg: "This playbook requires sudo permissions or root access. Please run with sudo or as root."
+      when: sudo_result.rc != 0 and ansible_user_id != 'root'
+
     - name: Ensure target user exists
       user:
         name: "{{ target_user }}"
