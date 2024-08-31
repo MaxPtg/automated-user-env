@@ -5,6 +5,7 @@
   vars:
     osh_install_dir: /usr/local/share/oh-my-bash
     target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
+    user_home_dir: "{{ lookup('env', 'HOME') }}"
 
   tasks:
     - name: Install Oh-My-Bash system-wide
@@ -36,7 +37,7 @@
     - name: Copy .custom.bashrc to user's home directory
       copy:
         src: ../../configs/.custom.bashrc
-        dest: "/home/{{ target_user }}/.custom.bashrc"
+        dest: "{{ user_home_dir }}/.custom.bashrc"
         owner: "{{ target_user }}"
         group: "{{ target_user }}"
         mode: '0644'
@@ -44,14 +45,14 @@
     - name: Copy .custom.bash_profile to user's home directory
       copy:
         src: ../../configs/.custom.bash_profile
-        dest: "/home/{{ target_user }}/.custom.bash_profile"
+        dest: "{{ user_home_dir }}/.custom.bash_profile"
         owner: "{{ target_user }}"
         group: "{{ target_user }}"
         mode: '0644'
 
     - name: Ensure .custom.bashrc is sourced in user's .bashrc
       blockinfile:
-        path: "/home/{{ target_user }}/.bashrc"
+        path: "{{ user_home_dir }}/.bashrc"
         block: |
           # Oh-My-Bash configuration
           export OSH='{{ osh_install_dir }}'
@@ -68,7 +69,7 @@
 
     - name: Ensure .custom.bash_profile is sourced in user's .bash_profile
       blockinfile:
-        path: "/home/{{ target_user }}/.bash_profile"
+        path: "{{ user_home_dir }}/.bash_profile"
         block: |
           # Source custom bash_profile if it exists
           if [ -f ~/.custom.bash_profile ]; then
