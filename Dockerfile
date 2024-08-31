@@ -23,10 +23,8 @@ WORKDIR /root
 # Create a startup script
 RUN echo '#!/bin/bash' > /root/startup.sh && \
     echo 'git clone https://github.com/MaxPtg/automated-user-env /root/automated-user-env' >> /root/startup.sh && \
-    echo 'chmod +x /root/automated-user-env/scripts/initial_setup.sh' >> /root/startup.sh && \
-    echo 'chmod +x /root/automated-user-env/scripts/update_env.sh' >> /root/startup.sh && \
-    echo 'exec /bin/bash && cd /root/automated-user-env/scripts' >> /root/startup.sh && \
-    chmod +x /root/startup.sh
+    echo 'exec /bin/bash' >> /root/startup.sh && \
+    chmod +x /root/startup.sh && cd /root/automated-user-env/scripts
 
 # Set default command to run the startup script
 CMD ["/root/startup.sh"]
