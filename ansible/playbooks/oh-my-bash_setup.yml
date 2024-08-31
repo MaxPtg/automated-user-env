@@ -2,10 +2,6 @@
 - name: Set up Oh-My-Bash for target user
   hosts: all
   become: yes
-  vars:
-    osh_install_dir: /usr/local/share/oh-my-bash
-    target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
-    target_user_home_dir: "{{ lookup('env', 'HOME') }}"
 
   tasks:
     - name: Install Oh-My-Bash system-wide

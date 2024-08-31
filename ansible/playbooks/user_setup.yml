@@ -2,9 +2,6 @@
 - name: Configure user environment
   hosts: all
   become: yes
-  vars:
-    target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
-    target_user_home_dir: "{{ lookup('env', 'HOME') }}"
 
   tasks:
     - name: Copy custom dotfiles

@@ -7,14 +7,56 @@
       prompt: Enter the target username
       private: no
       default: "{{ lookup('env', 'USER') }}"
-
+    - name: target_user_home_dir
+      prompt: Enter the target user's home directory
+      private: no
+      default: "{{ lookup('env', 'HOME') }}"
+    - name: osh_install_dir
+      prompt: The installation directory for oh-my-bash
+      private: no
+      default: /usr/local/share/oh-my-bash
   tasks:
     - name: Ensure target user exists
       user:
         name: "{{ target_user }}"
         state: present
         create_home: yes
+        home: "{{ target_user_home_dir }}"
+
+    - name: Ensure target user's home directory exists
+      file:
+        path: "{{ target_user_home_dir }}"
+        state: directory
+        owner: "{{ target_user }}"
+        group: "{{ target_user }}"
+        mode: '0755'
+
+    - name: Set fact for variables to be used in imported playbooks
+      set_fact:
+        shared_vars:
+          target_user: "{{ target_user }}"
+          target_user_home_dir: "{{ target_user_home_dir }}"
+          osh_install_dir: "{{ osh_install_dir }}"
+
+    - name: Display user information
+      debug:
+        msg: 
+          - "Target User: {{ target_user }}"
+          - "Home Directory: {{ target_user_home_dir }}"
+          - "Oh-My-Bash Install Directory: {{ osh_install_dir }}"
 
 - import_playbook: packages_install.yml
+  vars:
+    target_user: "{{ hostvars['localhost']['shared_vars']['target_user'] }}"
+    target_user_home_dir: "{{ hostvars['localhost']['shared_vars']['target_user_home_dir'] }}"
+
 - import_playbook: oh-my-bash_setup.yml
+  vars:
+    osh_install_dir: "{{ hostvars['localhost']['shared_vars']['osh_install_dir'] }}"
+    target_user: "{{ hostvars['localhost']['shared_vars']['target_user'] }}"
+    target_user_home_dir: "{{ hostvars['localhost']['shared_vars']['target_user_home_dir'] }}"
+
 - import_playbook: user_setup.yml
+  vars:
+    target_user: "{{ hostvars['localhost']['shared_vars']['target_user'] }}"
+    target_user_home_dir: "{{ hostvars['localhost']['shared_vars']['target_user_home_dir'] }}"
