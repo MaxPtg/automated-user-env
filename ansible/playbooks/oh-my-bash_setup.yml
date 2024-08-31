@@ -20,9 +20,9 @@
       loop:
         - "OSH={{ osh_install_dir }}"
 
-    - name: Create theme directory
+    - name: Create luan theme directory
       file:
-        path: "{{ osh_install_dir }}/themes"
+        path: "{{ osh_install_dir }}/themes/luan"
         state: directory
         mode: '0755'
 
