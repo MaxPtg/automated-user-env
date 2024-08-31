@@ -12,7 +12,10 @@ RUN apt-get install -y \
     git \
     nano \
     bat \
-    curl
+    # these 2 packages will be automatically installed
+    # > I install them here to speed up the build/test process
+    curl \ 
+    ansible
 
 # Clean up
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -20,7 +23,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Set the working directory
 WORKDIR /root
 
-# Create a startup script
+# Create a startup script and clone the automated-user-env repository directly into /root
 RUN echo '#!/bin/bash' > /root/startup.sh && \
     echo 'git clone https://github.com/MaxPtg/automated-user-env /root/automated-user-env' >> /root/startup.sh && \
     echo 'exec /bin/bash' >> /root/startup.sh && \
