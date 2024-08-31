@@ -13,7 +13,7 @@
       private: no
       default: "{{ lookup('env', 'HOME') }}"
     - name: osh_install_dir
-      prompt: The installation directory for oh-my-bash
+      prompt: Enter the installation directory for oh-my-bash
       private: no
       default: /usr/local/share/oh-my-bash
 
@@ -50,6 +50,8 @@
 - import_playbook: packages_install.yml
 
 - import_playbook: oh-my-bash_setup.yml
+  vars:
+    osh_install_dir: "{{ hostvars['localhost']['shared_vars']['osh_install_dir'] }}"
 
 - import_playbook: user_env_setup.yml
   vars:
