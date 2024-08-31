@@ -11,8 +11,8 @@ RUN apt-get install -y \
     htop \
     git \
     nano \
-    # temporary packages
-    ansible 
+    bat \
+    curl
 
 # Clean up
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
