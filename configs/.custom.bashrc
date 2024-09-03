@@ -46,7 +46,6 @@ aliases=(
 plugins=(
     git
     bashmarks
-    cargo
     goenv
     golang
 )
