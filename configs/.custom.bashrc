@@ -66,6 +66,9 @@ alias rcedit='nano ~/.bashrc && source ~/.bashrc'
 alias rc="source ~/.bashrc"
 alias ls='ls --color=always'
 
+# docker alias
+alias dps='sudo docker ps'
+
 # functions
 function mkcd() {
     mkdir -p "$1" && cd "$1"
