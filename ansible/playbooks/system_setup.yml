@@ -4,30 +4,28 @@
   become: yes  # These tasks need sudo
 
   tasks:
-    - name: Install Oh-My-Bash system-wide
-      shell: >
-        cd ~ && bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" --prefix=/usr/local --unattended
-      args:
-        creates: /usr/local/share/oh-my-bash
+    # Group setup
+    - name: Create osh group
+      group:
+        name: osh
+        state: present
 
-    - name: Ensure custom theme directories exist
+    - name: Add current user to osh group
+      user:
+        name: "{{ lookup('env', 'USER') }}"
+        groups: osh
+        append: yes
+
+    # Create base directories with proper ownership
+    - name: Ensure oh-my-bash base directory exists
       file:
-        path: "{{ item }}"
+        path: /usr/local/share/oh-my-bash
         state: directory
-        mode: '0755'
-      loop:
-        - /usr/local/share/oh-my-bash/custom
-        - /usr/local/share/oh-my-bash/custom/themes
-        - /usr/local/share/oh-my-bash/custom/themes/luan
+        owner: root
+        group: osh
+        mode: '0775'
 
-    - name: Copy custom luan theme
-      copy:
-        src: "../../configs/oh-my-bash/themes/luan/luan.theme.sh"
-        dest: "/usr/local/share/oh-my-bash/custom/themes/luan/luan.theme.sh"
-        mode: '0644'
-        force: yes
-
-    - name: Create system-wide oh-my-bash configuration
+    - name: Create system-wide environment file
       copy:
         dest: /etc/profile.d/oh-my-bash.sh
         content: |
@@ -35,4 +33,6 @@
           export OSH='/usr/local/share/oh-my-bash'
           export OSH_CUSTOM='/usr/local/share/oh-my-bash/custom'
           [ -f $OSH/oh-my-bash.sh ] && source $OSH/oh-my-bash.sh
+        owner: root
+        group: root
         mode: '0644'
