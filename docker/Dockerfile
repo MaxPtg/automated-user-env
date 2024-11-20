@@ -29,6 +29,9 @@ WORKDIR /home/testuser
 COPY test-startup.sh /usr/local/bin/test-startup.sh
 RUN chmod +x /usr/local/bin/test-startup.sh
 
+# Create directory for local mode
+RUN mkdir -p /automated-user-env
+
 # Switch to test user
 USER testuser
 

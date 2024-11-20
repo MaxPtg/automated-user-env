@@ -36,7 +36,8 @@
           export OSH_CUSTOM='/usr/local/share/oh-my-bash/custom'
         mode: '0644'
 
-    # Force reload of profile.d scripts
     - name: Reload profile.d scripts
       shell: |
-        source /etc/profile.d/oh-my-bash.sh
+        . /etc/profile.d/oh-my-bash.sh
+      args:
+        executable: /bin/bash
