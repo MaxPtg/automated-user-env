@@ -1,30 +1,11 @@
 ---
 - name: Configure system-wide components
   hosts: all
-  become: yes  # These tasks need sudo
+  become: yes
   vars:
     target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
 
   tasks:
-    # Group setup
-    - name: Create osh group
-      group:
-        name: osh
-        state: present
-
-    - name: Debug user detection
-      debug:
-        msg: 
-          - "Target user: {{ target_user }}"
-          - "Sudo user: {{ ansible_env.SUDO_USER | default('not set') }}"
-          - "User ID: {{ ansible_user_id }}"
-
-    - name: Add current user to osh group
-      user:
-        name: "{{ target_user }}"
-        groups: osh
-        append: yes
-
     - name: Create system-wide environment file
       copy:
         dest: /etc/profile.d/oh-my-bash.sh

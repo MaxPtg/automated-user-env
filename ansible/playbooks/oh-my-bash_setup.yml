@@ -7,21 +7,9 @@
     # Install oh-my-bash
     - name: Install Oh-My-Bash system-wide
       shell: >
-        cd /tmp && bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" --prefix=/usr/local --unattended
+        bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" --prefix=/usr/local --unattended
       args:
         creates: /usr/local/share/oh-my-bash/oh-my-bash.sh
-
-    # Fix permissions after installation
-    - name: Set oh-my-bash directory permissions
-      file:
-        path: /usr/local/share/oh-my-bash
-        state: directory
-        recurse: yes
-        owner: root
-        group: osh
-        mode: "{{ item.mode }}"
-      loop:
-        - { mode: "g+w,o-w" }  # Add group write, remove other write
 
     # Theme setup
     - name: Ensure custom theme directories exist
@@ -44,15 +32,6 @@
         group: osh
         mode: '0664'
         force: yes
-
-    # Clean up any stray files
-    - name: Remove installation artifacts
-      file:
-        path: "/tmp/{{ item }}"
-        state: absent
-      loop:
-        - bashrc
-        - .bashrc
 
     # Set temporary environment variables for the current Ansible run
     - name: Set OSH environment variables for current session
