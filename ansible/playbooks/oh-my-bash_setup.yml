@@ -17,7 +17,6 @@
         path: "{{ item }}"
         state: directory
         owner: root
-        group: osh
         mode: '0775'
       loop:
         - /usr/local/share/oh-my-bash/custom
@@ -29,7 +28,6 @@
         src: "../../configs/oh-my-bash/themes/luan/luan.theme.sh"
         dest: "/usr/local/share/oh-my-bash/custom/themes/luan/luan.theme.sh"
         owner: root
-        group: osh
         mode: '0664'
         force: yes
 
