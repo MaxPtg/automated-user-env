@@ -66,7 +66,7 @@ color_prompt=yes
 # aliases
 alias update='sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean'
 alias rcedit='nano ~/.automated-user-env/bashrc && source ~/.bashrc'
-alias drcedit='nano ~/bashrc && source ~/.bashrc'
+alias drcedit='nano ~/.bashrc && source ~/.bashrc'
 alias rc='source ~/.bashrc'
 alias ls='ls --color=always'
 alias dps='sudo docker ps'
