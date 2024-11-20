@@ -27,6 +27,11 @@ export ANSIBLE_FORCE_INTERACTIVE=1
 echo -e "${YELLOW}Running setup with debug...${NC}"
 bash -x initial_setup.sh
 
+# Source files
+source /etc/profile.d/oh-my-bash.sh
+source /home/testuser/.bash_profile
+source /home/testuser/.bashrc
+
 # Verify installation
 echo -e "${YELLOW}Verifying installation...${NC}"
 
@@ -56,13 +61,6 @@ verify_path "/home/testuser/.automated-user-env"
 echo -e "\nChecking if oh-my-bash environment variables are set:"
 echo "OSH=$OSH"
 echo "OSH_CUSTOM=$OSH_CUSTOM"
-
-# Additional debug information
-echo -e "\nProcess tree:"
-ps auxf
-
-echo -e "\nFile system permissions for home directory:"
-ls -la /home/testuser/
 
 echo -e "\nEnvironment variables:"
 env | sort
