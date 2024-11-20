@@ -15,10 +15,8 @@ git clone https://github.com/MaxPtg/automated-user-env /home/testuser/automated-
 # Run initial setup with forced interactive mode
 echo -e "${YELLOW}Running initial setup...${NC}"
 cd /home/testuser/automated-user-env/scripts
-ANSIBLE_FORCE_INTERACTIVE=1 bash initial_setup.sh
-
-# Source the updated configuration
-source /home/testuser/.bashrc
+export ANSIBLE_FORCE_INTERACTIVE=1
+bash initial_setup.sh
 
 # Verify installation
 echo -e "${YELLOW}Verifying installation...${NC}"
@@ -43,9 +41,8 @@ echo -e "\nChecking user configuration:"
 verify_path "/home/testuser/.automated-user-env"
 
 echo -e "\nChecking if oh-my-bash environment variables are set:"
+source /etc/profile.d/oh-my-bash.sh
 echo "OSH=$OSH"
 echo "OSH_CUSTOM=$OSH_CUSTOM"
 
 echo -e "${GREEN}Test environment ready for inspection.${NC}"
-echo -e "${YELLOW}You can now manually inspect the environment.${NC}"
-echo -e "${YELLOW}The shell will remain active for testing.${NC}"

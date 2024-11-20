@@ -34,10 +34,13 @@
           # System-wide oh-my-bash configuration
           export OSH='/usr/local/share/oh-my-bash'
           export OSH_CUSTOM='/usr/local/share/oh-my-bash/custom'
+          [ -f $OSH/oh-my-bash.sh ] && source $OSH/oh-my-bash.sh
         mode: '0644'
 
-    - name: Reload profile.d scripts
-      shell: |
-        . /etc/profile.d/oh-my-bash.sh
-      args:
-        executable: /bin/bash
+    # Set temporary environment variables for the current Ansible run
+    - name: Set OSH environment variables for current session
+      set_fact:
+        ansible_env: "{{ ansible_env | combine({
+          'OSH': '/usr/local/share/oh-my-bash',
+          'OSH_CUSTOM': '/usr/local/share/oh-my-bash/custom'
+        }) }}"
