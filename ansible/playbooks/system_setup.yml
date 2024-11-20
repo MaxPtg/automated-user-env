@@ -6,6 +6,7 @@
     target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
 
   tasks:
+    # Existing tasks...
     - name: Create system-wide environment file
       copy:
         dest: /etc/profile.d/oh-my-bash.sh
@@ -17,3 +18,83 @@
         owner: root
         group: root
         mode: '0644'
+
+    # New timezone configuration
+    - name: Install required packages for timezone setup
+      apt:
+        name:
+          - systemd
+          - tzdata
+        state: present
+
+    - name: Set timezone to Europe/Berlin
+      community.general.timezone:
+        name: Europe/Berlin
+
+    - name: Enable NTP
+      command: timedatectl set-ntp true
+      changed_when: false
+      failed_when: false  # Some systems might not support NTP
+
+    # Locale configuration
+    - name: Install locales package
+      apt:
+        name: locales
+        state: present
+
+    - name: Generate required locales
+      locale_gen:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - en_US.UTF-8
+        - de_DE.UTF-8
+
+    - name: Create locale configuration file
+      copy:
+        dest: /etc/default/locale
+        content: |
+          LANG="en_US.UTF-8"
+          LANGUAGE="en_US:en"
+          LC_CTYPE="en_US.UTF-8"
+          LC_NUMERIC="POSIX"
+          LC_TIME="POSIX"
+          LC_COLLATE="POSIX"
+          LC_MONETARY="POSIX"
+          LC_MESSAGES="POSIX"
+          LC_PAPER="POSIX"
+          LC_NAME="POSIX"
+          LC_ADDRESS="POSIX"
+          LC_TELEPHONE="POSIX"
+          LC_MEASUREMENT="POSIX"
+          LC_IDENTIFICATION="POSIX"
+          LC_ALL=""
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Ensure locale environment variables are set
+      lineinfile:
+        path: /etc/environment
+        line: "{{ item }}"
+        create: yes
+      loop:
+        - 'LANG="en_US.UTF-8"'
+        - 'LANGUAGE="en_US:en"'
+        - 'LC_CTYPE="en_US.UTF-8"'
+        - 'LC_NUMERIC="POSIX"'
+        - 'LC_TIME="POSIX"'
+        - 'LC_COLLATE="POSIX"'
+        - 'LC_MONETARY="POSIX"'
+        - 'LC_MESSAGES="POSIX"'
+        - 'LC_PAPER="POSIX"'
+        - 'LC_NAME="POSIX"'
+        - 'LC_ADDRESS="POSIX"'
+        - 'LC_TELEPHONE="POSIX"'
+        - 'LC_MEASUREMENT="POSIX"'
+        - 'LC_IDENTIFICATION="POSIX"'
+        - 'LC_ALL=""'
+
+    - name: Update system locale
+      command: update-locale
+      changed_when: false

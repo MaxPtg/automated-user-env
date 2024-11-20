@@ -7,15 +7,8 @@
     target_user_home: "{{ ansible_env.HOME }}"
 
   tasks:
-    - name: Ensure automation directory exists
-      file:
-        path: "{{ target_user_home }}/.automated-user-env"
-        state: directory
-        owner: "{{ target_user }}"
-        group: "{{ target_user }}"
-        mode: '0755'
-
-    - name: Update config files
+    # Config Updates (No migration needed)
+    - name: Update bashrc and aliases
       copy:
         src: "../../configs/{{ item }}"
         dest: "{{ target_user_home }}/.automated-user-env/{{ item }}"
@@ -26,29 +19,16 @@
         - bashrc
         - bash_profile
 
-    - name: Update custom theme
-      copy:
-        src: "../../configs/oh-my-bash/themes/luan/theme.sh"
-        dest: "/usr/local/share/oh-my-bash/custom/themes/luan/luan.theme.sh"
-        mode: '0644'
-        force: yes
+    # Package Updates (No migration needed)
+    - name: Install/Update packages
+      apt:
+        name: "{{ system_packages }}"
+        state: present
+        update_cache: yes
 
-    - name: Ensure config files are sourced
-      blockinfile:
-        path: "{{ target_user_home }}/{{ item.file }}"
-        create: yes
-        block: |
-          # Source automated-user-env configurations
-          if [ -f ~/.automated-user-env/{{ item.config }} ]; then
-              source ~/.automated-user-env/{{ item.config }}
-          fi
-        marker: "# {mark} AUTOMATED-USER-ENV MANAGED BLOCK"
-        owner: "{{ target_user }}"
-        group: "{{ target_user }}"
-        mode: '0644'
-      loop:
-        - { file: '.bashrc', config: 'bashrc' }
-        - { file: '.bash_profile', config: 'bash_profile' }
+    # Check for pending migrations
+    - name: Check pending migrations
+      include_tasks: check_migrations.yml
 
     # Force reload of shell configuration
     - name: Reload shell configuration

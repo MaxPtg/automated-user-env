@@ -1,0 +1,18 @@
+---
+- name: Load current version info
+  include_vars:
+    file: /usr/local/share/automated-user-env/version.yml
+    name: version_info
+
+- name: Get available migrations
+  find:
+    paths: ../migrations
+    patterns: "*.yml"
+  register: migration_files
+
+- name: Apply pending migrations
+  include_tasks: "{{ item.path }}"
+  loop: "{{ migration_files.files }}"
+  when: item.path | basename | replace('.yml','') not in version_info.installed_migrations
+  loop_control:
+    label: "{{ item.path | basename }}"

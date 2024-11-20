@@ -1,61 +1,98 @@
 # automated-user-env
 
-A simple automation suite to set up a custom user environment on any Debian/Ubuntu machine. It uses **Ansible** and **Bash** scripts to install and configure the necessary packages and environment variables.
+A comprehensive automation suite to set up and maintain a custom user environment on any Debian/Ubuntu machine. It uses **Ansible** and **Bash** scripts to install and configure necessary packages, environment variables, and shell customizations.
 
-It is intended to be used on a fresh install of a Debian/Ubuntu machine, but it can be used to update an existing environment as well. That way, you can keep your environment up to date with the latest changes across all your machines.
+## Overview
+
+The suite provides:
+- System-wide oh-my-bash installation with custom theme
+- Automated package installation and updates
+- User environment configuration management
+- Version tracking and updates
+- Docker-based testing environment
+
+## Project Structure
+```
+automated-user-env/
+├── ansible/
+│   ├── group_vars/
+│   │   └── all.yml
+│   ├── host_vars/
+│   ├── migrations/
+│   ├── playbooks/
+│   │   ├── main_setup.yml
+│   │   ├── main_update.yml
+│   │   ├── oh-my-bash_setup.yml
+│   │   ├── packages_install.yml
+│   │   ├── system_setup.yml
+│   │   ├── user_env_setup.yml
+│   │   ├── user_env_update.yml
+│   │   └── version_check.yml
+│   ├── roles/
+│   └── inventory.yml
+├── configs/
+├── docker/
+│   ├── build.sh
+│   ├── Dockerfile
+│   └── test-startup.sh
+└── scripts/
+    ├── initial_setup.sh
+    └── update_env.sh
+```
 
 ## Prerequisites
 
-In order to use this script, you must have the following packages installed:
-
-```bash	
+Required packages:
+```bash
 sudo apt update
 sudo apt install -y sudo git curl
 ```
 
-Packages needed by the suite will be installed on the first run of the `initial_setup.sh` script.
+## Installation
 
-## Usage
-
-Clone the repository into your home directory:
+1. Clone the repository:
 
 ```bash
 git clone https://github.com/MaxPtg/automated-user-env
 ```
 
-Navigate to the `scripts` directory:
+2. Navigate to scripts:
 
 ```bash
 cd automated-user-env/scripts
 ```
 
-On a fresh install, run the `inistal_setup.sh` script:
+3. Run initial setup:
 
 ```bash
 sudo bash initial_setup.sh && source ~/.bashrc
 ```
 
-After the initial setup, you can run the `update_env.sh` script to update your environment:
+## Updating
+
+To update your environment with latest changes:
 
 ```bash
 sudo bash update_env.sh
 ```
 
-> **NOTE**: The `update_env.sh` script will update your environment with the latest changes from the repository. As some environment variables could be changed/removed, it is recommended to restart your terminal session after running the script.
+> **NOTE**: Restart your terminal session after updates as environment variables may change.
 
 ## Testing
 
-To easily develop and test this automation suite, you can use the provided `Dockerfile` to build a container with the necessary dependencies. To speed up the process, you can use the provided `build.sh` script:
+For development and testing:
 
 ```bash
 sudo bash build.sh
 ```
 
-This script uses `DOCKER_BUILDKIT=1` to build the container, which allows for caching of intermediate layers. This way, you can quickly iterate on the development of the automation suite.
+This uses BuildKit for efficient container builds with layer caching.
 
-> **NOTE**: The required packages are already installed in the container, so you don't need to install them manually.
+## Features
 
-## Known Bugs/ToDo
-
-- [ ] Add support to change the `oh-my-bash` installation directory
-    - If **not** left on default, manual changes to the `.custom.bash*` files are needed
+- System-wide oh-my-bash installation with custom Luan theme
+- Automated package management
+- Centralized user environment configuration
+- Version tracking
+- Docker-based testing environment
+- Comprehensive backup and restore functionality
