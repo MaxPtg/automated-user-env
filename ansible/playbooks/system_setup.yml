@@ -36,12 +36,6 @@
       changed_when: false
       failed_when: false  # Some systems might not support NTP
 
-    # Locale configuration
-    - name: Install locales package
-      apt:
-        name: locales
-        state: present
-
     - name: Generate required locales
       locale_gen:
         name: "{{ item }}"
