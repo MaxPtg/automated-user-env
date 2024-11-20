@@ -23,7 +23,6 @@ git clone https://github.com/MaxPtg/automated-user-env /home/testuser/automated-
 echo -e "${YELLOW}Running initial setup...${NC}"
 cd /home/testuser/automated-user-env/scripts
 export ANSIBLE_FORCE_INTERACTIVE=1
-export ANSIBLE_DEBUG=1  # Enable Ansible debug output
 
 echo -e "${YELLOW}Running setup with debug...${NC}"
 bash -x initial_setup.sh
