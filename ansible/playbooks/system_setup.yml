@@ -19,14 +19,6 @@
         group: root
         mode: '0644'
 
-    # New timezone configuration
-    - name: Install required packages for timezone setup
-      apt:
-        name:
-          - systemd
-          - tzdata
-        state: present
-
     - name: Set timezone to Europe/Berlin
       community.general.timezone:
         name: Europe/Berlin
