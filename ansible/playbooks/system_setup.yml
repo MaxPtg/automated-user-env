@@ -2,6 +2,8 @@
 - name: Configure system-wide components
   hosts: all
   become: yes  # These tasks need sudo
+  vars:
+    target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
 
   tasks:
     # Group setup
@@ -10,9 +12,16 @@
         name: osh
         state: present
 
+    - name: Debug user detection
+      debug:
+        msg: 
+          - "Target user: {{ target_user }}"
+          - "Sudo user: {{ ansible_env.SUDO_USER | default('not set') }}"
+          - "User ID: {{ ansible_user_id }}"
+
     - name: Add current user to osh group
       user:
-        name: "{{ lookup('env', 'USER') }}"
+        name: "{{ target_user }}"
         groups: osh
         append: yes
 
@@ -36,3 +45,4 @@
         owner: root
         group: root
         mode: '0644'
+        
