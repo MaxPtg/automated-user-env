@@ -25,15 +25,6 @@
         groups: osh
         append: yes
 
-    # Create base directories with proper ownership
-    - name: Ensure oh-my-bash base directory exists
-      file:
-        path: /usr/local/share/oh-my-bash
-        state: directory
-        owner: root
-        group: osh
-        mode: '0775'
-
     - name: Create system-wide environment file
       copy:
         dest: /etc/profile.d/oh-my-bash.sh
@@ -45,4 +36,3 @@
         owner: root
         group: root
         mode: '0644'
-        
