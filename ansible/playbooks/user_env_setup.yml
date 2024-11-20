@@ -4,26 +4,14 @@
   become: yes
   vars:
     target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
-    target_user_home: "{{ ansible_env.HOME }}"
+    target_user_home: "/home/{{ target_user }}"  # Explicitly set the home directory
 
   tasks:
-    - name: Debug variables before directory creation
+    - name: Debug variables
       debug:
         msg:
           - "Target User: {{ target_user }}"
           - "Home Directory: {{ target_user_home }}"
-          - "Current User ID: {{ ansible_user_id }}"
-          - "Sudo User: {{ ansible_env.SUDO_USER | default('Not set') }}"
-          - "Home Path to create: {{ target_user_home }}/.automated-user-env"
-
-    - name: Check if directory already exists
-      stat:
-        path: "{{ target_user_home }}/.automated-user-env"
-      register: automated_env_dir
-
-    - name: Show directory status
-      debug:
-        msg: "Directory exists: {{ automated_env_dir.stat.exists | default(false) }}"
 
     - name: Create user automation directory
       file:
@@ -32,19 +20,7 @@
         owner: "{{ target_user }}"
         group: "{{ target_user }}"
         mode: '0755'
-      register: dir_creation
-
-    - name: Debug directory creation
-      debug:
-        msg: "Directory creation result: {{ dir_creation }}"
-
-    - name: List home directory contents
-      shell: "ls -la {{ target_user_home }}"
-      register: home_contents
-
-    - name: Show home directory contents
-      debug:
-        msg: "{{ home_contents.stdout_lines }}"
+      become: yes
 
     - name: Copy config files to automation directory
       copy:
@@ -56,23 +32,7 @@
       loop:
         - bashrc
         - bash_profile
-      register: config_copy
-
-    - name: Debug config file copying
-      debug:
-        msg: "Config copy results: {{ config_copy }}"
-
-    - name: Verify config files exist
-      stat:
-        path: "{{ target_user_home }}/.automated-user-env/{{ item }}"
-      loop:
-        - bashrc
-        - bash_profile
-      register: config_verification
-
-    - name: Show config files status
-      debug:
-        msg: "{{ config_verification }}"
+      become: yes
 
     - name: Ensure config files are sourced
       blockinfile:
@@ -90,11 +50,7 @@
       loop:
         - { file: '.bashrc', config: 'bashrc' }
         - { file: '.bash_profile', config: 'bash_profile' }
-      register: config_sourcing
-
-    - name: Debug config sourcing
-      debug:
-        msg: "Config sourcing results: {{ config_sourcing }}"
+      become: yes
 
     # Force reload of shell configuration
     - name: Reload shell configuration
@@ -102,21 +58,5 @@
         . {{ target_user_home }}/.bashrc
       args:
         executable: /bin/bash
-      register: shell_reload
-
-    - name: Debug shell reload
-      debug:
-        msg: "Shell reload result: {{ shell_reload }}"
-
-    - name: Final verification
-      shell: |
-        ls -la {{ target_user_home }}/.automated-user-env/
-        echo "Current user: $(whoami)"
-        echo "Current home: $HOME"
-        echo "Permissions: $(namei -l {{ target_user_home }}/.automated-user-env)"
-      register: final_check
-
-    - name: Show final verification
-      debug:
-        msg: "{{ final_check.stdout_lines }}"
-        
+      become: yes
+      become_user: "{{ target_user }}"
