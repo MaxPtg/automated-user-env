@@ -1,10 +1,10 @@
 ---
 - name: Configure user environment
   hosts: all
-  become: yes
+  become: no  # Default to no sudo
   vars:
-    target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
-    target_user_home: "/home/{{ target_user }}"  # Explicitly set the home directory
+    target_user: "{{ lookup('env', 'USER') }}"
+    target_user_home: "{{ lookup('env', 'HOME') }}"
 
   tasks:
     - name: Debug variables
@@ -12,27 +12,23 @@
         msg:
           - "Target User: {{ target_user }}"
           - "Home Directory: {{ target_user_home }}"
+          - "Current User: {{ lookup('env', 'USER') }}"
 
+    # User-level tasks (no sudo needed)
     - name: Create user automation directory
       file:
         path: "{{ target_user_home }}/.automated-user-env"
         state: directory
-        owner: "{{ target_user }}"
-        group: "{{ target_user }}"
         mode: '0755'
-      become: yes
 
     - name: Copy config files to automation directory
       copy:
         src: "../../configs/{{ item }}"
         dest: "{{ target_user_home }}/.automated-user-env/{{ item }}"
-        owner: "{{ target_user }}"
-        group: "{{ target_user }}"
         mode: '0644'
       loop:
         - bashrc
         - bash_profile
-      become: yes
 
     - name: Ensure config files are sourced
       blockinfile:
@@ -44,19 +40,33 @@
               source ~/.automated-user-env/{{ item.config }}
           fi
         marker: "# {mark} AUTOMATED-USER-ENV MANAGED BLOCK"
-        owner: "{{ target_user }}"
-        group: "{{ target_user }}"
         mode: '0644'
       loop:
         - { file: '.bashrc', config: 'bashrc' }
         - { file: '.bash_profile', config: 'bash_profile' }
+
+    # Only use sudo for tasks that absolutely need it
+    - name: Ensure system-wide oh-my-bash is available
+      stat:
+        path: /usr/local/share/oh-my-bash
+      register: omb_check
       become: yes
 
-    # Force reload of shell configuration
+    - name: Add oh-my-bash variables to bashrc if system install exists
+      blockinfile:
+        path: "{{ target_user_home }}/.bashrc"
+        marker: "# {mark} OH-MY-BASH VARIABLES"
+        block: |
+          # System-wide oh-my-bash configuration
+          export OSH='/usr/local/share/oh-my-bash'
+          export OSH_CUSTOM='/usr/local/share/oh-my-bash/custom'
+          [ -f $OSH/oh-my-bash.sh ] && source $OSH/oh-my-bash.sh
+        mode: '0644'
+      when: omb_check.stat.exists
+
+    # Reload shell configuration without sudo
     - name: Reload shell configuration
       shell: |
         . {{ target_user_home }}/.bashrc
       args:
         executable: /bin/bash
-      become: yes
-      become_user: "{{ target_user }}"

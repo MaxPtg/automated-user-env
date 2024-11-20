@@ -1,44 +1,50 @@
 ---
 - name: Set up user environment
   hosts: all
-  become: yes
+  become: no
   
-  vars_prompt:
-    - name: target_user
-      prompt: Enter the target username
-      private: no
-      default: "{{ lookup('pipe', 'whoami') }}"
-    - name: target_user_home
-      prompt: Enter the target user's home directory
-      private: no
-      default: "{{ lookup('env', 'HOME') }}"
-
-  tasks:
-    - name: Check if user has sudo permissions or is root
-      command: sudo -n true
-      register: sudo_result
+  pre_tasks:
+    - name: Check if sudo is available
+      command: which sudo
+      register: sudo_available
       ignore_errors: yes
       changed_when: false
 
-    - name: Abort if user doesn't have sudo permissions and is not root
+    - name: Test sudo access
+      command: sudo -n true
+      register: sudo_test
+      ignore_errors: yes
+      changed_when: false
+      when: sudo_available.rc == 0
+
+    - name: Set facts about sudo status
+      set_fact:
+        has_sudo: "{{ sudo_available.rc == 0 and sudo_test.rc == 0 }}"
+
+    - name: Fail if no sudo access available
       fail:
-        msg: "This playbook requires sudo permissions or root access. Please run with sudo or as root."
-      when: sudo_result.rc != 0 and ansible_user_id != 'root'
+        msg: |
+          This playbook requires sudo access for system-wide installation.
+          Please ensure you have sudo rights or run with sudo.
+          Current status:
+          - Sudo available: {{ sudo_available.rc == 0 }}
+          - Sudo access: {{ sudo_test.rc == 0 if sudo_available.rc == 0 else 'N/A' }}
+      when: not has_sudo
 
-    - name: Display setup information
-      debug:
-        msg:
-          - "Target User: {{ target_user }}"
-          - "Home Directory: {{ target_user_home }}"
-          - "Oh-My-Bash Directory: /usr/local/share/oh-my-bash"
+- name: System-wide setup
+  import_playbook: system_setup.yml
 
-- import_playbook: version_check.yml
-- import_playbook: packages_install.yml
-- import_playbook: oh-my-bash_setup.yml
+- name: Package installation
+  import_playbook: packages_install.yml
+
+- name: Oh-My-Bash setup
+  import_playbook: oh-my-bash_setup.yml
+
+- name: User environment setup
+  import_playbook: user_env_setup.yml
   vars:
-    target_user: "{{ hostvars['localhost']['target_user'] }}"
-    target_user_home: "{{ hostvars['localhost']['target_user_home'] }}"
-- import_playbook: user_env_setup.yml
-  vars:
-    target_user: "{{ hostvars['localhost']['target_user'] }}"
-    target_user_home: "{{ hostvars['localhost']['target_user_home'] }}"
+    target_user: "{{ lookup('env', 'USER') }}"
+    target_user_home: "{{ lookup('env', 'HOME') }}"
+
+- name: Version check and update
+  import_playbook: version_check.yml
