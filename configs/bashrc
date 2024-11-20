@@ -1,5 +1,5 @@
 #=============================================================
-#=== CUSTOM .bashrc FILE =====================================
+#=== AUTOMATED USER ENVIRONMENT CONFIG =======================
 #=============================================================
 
 #=== oh-my-bash ==============================================
@@ -50,7 +50,7 @@ plugins=(
     golang
 )
 
-# Source Oh-My-Bash
+# Source Oh-My-Bash (already set in /etc/profile.d/oh-my-bash.sh)
 [ -f $OSH/oh-my-bash.sh ] && source $OSH/oh-my-bash.sh
 
 #=== CUSTOM CONFIGURATIONS ===================================
@@ -62,11 +62,9 @@ color_prompt=yes
 
 # aliases
 alias update='sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean'
-alias rcedit='nano ~/.bashrc && source ~/.bashrc'
-alias rc="source ~/.bashrc"
+alias rcedit='nano ~/.automated-user-env/bashrc && source ~/.bashrc'
+alias rc='source ~/.bashrc'
 alias ls='ls --color=always'
-
-# docker alias
 alias dps='sudo docker ps'
 
 # functions

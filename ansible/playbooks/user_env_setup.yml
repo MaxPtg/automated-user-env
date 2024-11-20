@@ -2,69 +2,50 @@
 - name: Configure user environment
   hosts: all
   become: yes
+  vars:
+    target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
+    target_user_home: "{{ ansible_env.HOME }}"
 
   tasks:
-    - name: Copy custom dotfiles
+    - name: Create user automation directory
+      file:
+        path: "{{ target_user_home }}/.automated-user-env"
+        state: directory
+        owner: "{{ target_user }}"
+        group: "{{ target_user }}"
+        mode: '0755'
+
+    - name: Copy config files to automation directory
       copy:
         src: "../../configs/{{ item }}"
-        dest: "{{ target_user_home_dir }}/{{ item }}"
+        dest: "{{ target_user_home }}/.automated-user-env/{{ item }}"
         owner: "{{ target_user }}"
         group: "{{ target_user }}"
         mode: '0644'
       loop:
-        - .custom.bashrc
-        - .custom.bash_profile
+        - bashrc
+        - bash_profile
 
-    - name: Set global variables
-      lineinfile:
-        path: /etc/environment
-        line: "{{ item }}"
+    - name: Ensure config files are sourced
+      blockinfile:
+        path: "{{ target_user_home }}/{{ item.file }}"
+        create: yes
+        block: |
+          # Source automated-user-env configurations
+          if [ -f ~/.automated-user-env/{{ item.config }} ]; then
+              source ~/.automated-user-env/{{ item.config }}
+          fi
+        marker: "# {mark} AUTOMATED-USER-ENV MANAGED BLOCK"
+        owner: "{{ target_user }}"
+        group: "{{ target_user }}"
+        mode: '0644'
       loop:
-        - "OSH={{ osh_install_dir }}"
+        - { file: '.bashrc', config: 'bashrc' }
+        - { file: '.bash_profile', config: 'bash_profile' }
 
-    - name: Ensure oh-my-bash is sourced in .bashrc
-      blockinfile:
-        path: "{{ target_user_home_dir }}/.bashrc"
-        block: |
-
-          # Oh-My-Bash configuration
-          export OSH='{{ osh_install_dir }}'
-
-        marker: "# {mark} ANSIBLE MANAGED BLOCK - OH-MY-BASH"
-        create: yes
-        owner: "{{ target_user }}"
-        group: "{{ target_user }}"
-        mode: '0644'
-
-    - name: Ensure .custom.bashrc is sourced in user's .bashrc
-      blockinfile:
-        path: "{{ target_user_home_dir }}/.bashrc"
-        block: |
-          # Source custom bashrc if it exists
-          if [ -f ~/.custom.bashrc ]; then
-              source ~/.custom.bashrc
-          fi
-
-        create: yes
-        owner: "{{ target_user }}"
-        group: "{{ target_user }}"
-        mode: '0644'
-
-    - name: Ensure .custom.bash_profile is sourced in user's .bash_profile
-      blockinfile:
-        path: "{{ target_user_home_dir }}/.bash_profile"
-        block: |
-          # Source custom bash_profile if it exists
-          if [ -f ~/.custom.bash_profile ]; then
-              source ~/.custom.bash_profile
-          fi
-
-        marker: "# {mark} ANSIBLE MANAGED BLOCK - OH-MY-BASH"
-        create: yes
-        owner: "{{ target_user }}"
-        group: "{{ target_user }}"
-        mode: '0644'
-
-    - name: Reload bash configuration
-      shell: bash -c 'source {{ target_user_home_dir }}/.bashrc'
+    # Force reload of shell configuration
+    - name: Reload shell configuration
+      shell: |
+        exec bash
+        source {{ target_user_home }}/.bashrc
       become_user: "{{ target_user }}"

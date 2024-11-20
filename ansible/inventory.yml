@@ -3,5 +3,8 @@ all:
   hosts:
     localhost:
       ansible_connection: local
+      ansible_python_interpreter: /usr/bin/python3
   vars:
-    ansible_python_interpreter: /usr/bin/python3
+    target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
+    target_user_home: "{{ ansible_env.HOME }}"
+    ansible_interactive: true

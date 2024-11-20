@@ -8,18 +8,35 @@
       shell: >
         cd ~ && bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" --prefix=/usr/local --unattended
       args:
-        creates: "{{ osh_install_dir }}"
+        creates: /usr/local/share/oh-my-bash
 
-    - name: Create luan theme directory
+    - name: Ensure custom theme directories exist
       file:
-        path: "{{ osh_install_dir }}/themes/luan"
+        path: "{{ item }}"
         state: directory
         mode: '0755'
+      loop:
+        - /usr/local/share/oh-my-bash/custom
+        - /usr/local/share/oh-my-bash/custom/themes
+        - /usr/local/share/oh-my-bash/custom/themes/luan
 
-    - name: Copy custom luan theme to themes
+    - name: Copy custom luan theme
       copy:
-        src: ../../themes/oh-my-bash/luan-custom.theme.sh
-        dest: "{{ osh_install_dir }}/themes/luan/luan.theme.sh"
+        src: "../../configs/oh-my-bash/themes/luan/theme.sh"
+        dest: "/usr/local/share/oh-my-bash/custom/themes/luan/luan.theme.sh"
         mode: '0644'
         force: yes
 
+    - name: Create system-wide oh-my-bash configuration
+      copy:
+        dest: /etc/profile.d/oh-my-bash.sh
+        content: |
+          # System-wide oh-my-bash configuration
+          export OSH='/usr/local/share/oh-my-bash'
+          export OSH_CUSTOM='/usr/local/share/oh-my-bash/custom'
+        mode: '0644'
+
+    # Force reload of profile.d scripts
+    - name: Reload profile.d scripts
+      shell: |
+        source /etc/profile.d/oh-my-bash.sh

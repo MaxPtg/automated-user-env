@@ -1,0 +1,54 @@
+---
+# System paths
+system_paths:
+  oh_my_bash: /usr/local/share/oh-my-bash
+  oh_my_bash_custom: /usr/local/share/oh-my-bash/custom
+  automated_env: /usr/local/share/automated-user-env
+  profile_d: /etc/profile.d
+
+# User configuration
+user_config:
+  dir_name: .automated-user-env
+  configs:
+    - bashrc
+    - bash_profile
+
+# Package management
+system_packages:
+  - tmux
+  - zip
+  - unzip
+  - btop
+  - htop
+  - wget
+  - ncdu
+  - bat
+  - ncdu
+  - fzf
+
+# Oh-My-Bash configuration
+oh_my_bash:
+  theme: luan
+  theme_path: oh-my-bash/themes/luan/theme.sh
+  completions:
+    - git
+    - ssh
+    - docker
+    - docker-compose
+    - pip
+    - pip3
+    - tmux
+    - go
+    - npm
+    - nvm
+    - tmux
+  plugins:
+    - git
+    - bashmarks
+    - goenv
+    - golang
+
+# Version management
+version:
+  current: "1.0.0"
+  file_name: version.yml

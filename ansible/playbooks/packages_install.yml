@@ -11,16 +11,6 @@
 
     - name: Install required packages (Debian/Ubuntu)
       apt:
-        name:
-          - tmux
-          - zip
-          - unzip
-          - btop
-          - htop
-          - wget
-          - ncdu
-          - bat
-          - ncdu
-          - fzf
+        name: "{{ system_packages }}"
         state: present
       when: ansible_os_family == "Debian"

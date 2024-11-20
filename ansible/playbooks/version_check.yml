@@ -1,0 +1,36 @@
+---
+- name: Check installation version
+  hosts: all
+  become: yes
+  tasks:
+    - name: Ensure version directory exists
+      file:
+        path: /usr/local/share/automated-user-env
+        state: directory
+        mode: '0755'
+
+    - name: Check if version file exists
+      stat:
+        path: /usr/local/share/automated-user-env/version.yml
+      register: version_file
+
+    - name: Set initial version if file doesn't exist
+      copy:
+        content: |
+          current_version: "1.0.0"
+          last_update: "{{ ansible_date_time.iso8601 }}"
+        dest: /usr/local/share/automated-user-env/version.yml
+      when: not version_file.stat.exists
+
+    - name: Load current version
+      include_vars:
+        file: /usr/local/share/automated-user-env/version.yml
+        name: version_info
+      when: version_file.stat.exists
+
+    - name: Update last_update timestamp
+      lineinfile:
+        path: /usr/local/share/automated-user-env/version.yml
+        regexp: '^last_update:'
+        line: "last_update: {{ ansible_date_time.iso8601 }}"
+      when: version_file.stat.exists

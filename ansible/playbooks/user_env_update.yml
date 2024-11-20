@@ -4,26 +4,55 @@
   become: yes
   vars:
     target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
+    target_user_home: "{{ ansible_env.HOME }}"
 
   tasks:
-    - name: Update custom theme
-      copy:
-        src: ../../themes/oh-my-bash/luan-custom.theme.sh
-        dest: "{{ osh_install_dir }}/themes/luan/luan.theme.sh"
-        mode: '0644'
-        force: yes
+    - name: Ensure automation directory exists
+      file:
+        path: "{{ target_user_home }}/.automated-user-env"
+        state: directory
+        owner: "{{ target_user }}"
+        group: "{{ target_user }}"
+        mode: '0755'
 
-    - name: Update custom dotfiles
+    - name: Update config files
       copy:
         src: "../../configs/{{ item }}"
-        dest: "{{ target_user_home_dir }}/{{ item }}"
+        dest: "{{ target_user_home }}/.automated-user-env/{{ item }}"
         owner: "{{ target_user }}"
         group: "{{ target_user }}"
         mode: '0644'
       loop:
-        - .custom.bashrc
-        - .custom.bash_profile
+        - bashrc
+        - bash_profile
 
-    - name: Reload bash configuration
-      shell: bash -c 'source {{ target_user_home_dir }}/.bashrc'
+    - name: Update custom theme
+      copy:
+        src: "../../configs/oh-my-bash/themes/luan/theme.sh"
+        dest: "/usr/local/share/oh-my-bash/custom/themes/luan/luan.theme.sh"
+        mode: '0644'
+        force: yes
+
+    - name: Ensure config files are sourced
+      blockinfile:
+        path: "{{ target_user_home }}/{{ item.file }}"
+        create: yes
+        block: |
+          # Source automated-user-env configurations
+          if [ -f ~/.automated-user-env/{{ item.config }} ]; then
+              source ~/.automated-user-env/{{ item.config }}
+          fi
+        marker: "# {mark} AUTOMATED-USER-ENV MANAGED BLOCK"
+        owner: "{{ target_user }}"
+        group: "{{ target_user }}"
+        mode: '0644'
+      loop:
+        - { file: '.bashrc', config: 'bashrc' }
+        - { file: '.bash_profile', config: 'bash_profile' }
+
+    # Force reload of shell configuration
+    - name: Reload shell configuration
+      shell: |
+        exec bash
+        source {{ target_user_home }}/.bashrc
       become_user: "{{ target_user }}"
