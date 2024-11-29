@@ -70,6 +70,7 @@ alias drcedit='nano ~/.bashrc && source ~/.bashrc'
 alias rc='source ~/.bashrc'
 alias ls='ls --color=always'
 alias dps='sudo docker ps'
+alias yeet='echo "yeet"'
 
 # functions
 function mkcd() {
