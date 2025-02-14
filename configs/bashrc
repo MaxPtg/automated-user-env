@@ -2,6 +2,16 @@
 #=== AUTOMATED USER ENVIRONMENT CONFIG =======================
 #=============================================================
 
+# Enable the subsequent settings only in interactive sessions
+case $- in
+  *i*) ;;
+    *) return;;
+esac
+
+# Path to your oh-my-bash installation.
+export OSH='/usr/local/share/oh-my-bash'
+export OSH_CUSTOM='/usr/local/share/oh-my-bash/custom
+
 #=== oh-my-bash ==============================================
 
 # Set Oh-My-Bash theme
